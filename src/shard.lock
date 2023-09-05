@@ -1,0 +1,10 @@
+version: 2.0
+shards:
+  readline:
+    git: https://github.com/crystal-lang/crystal-readline.git
+    version: 0.1.1
+
+  reply:
+    git: https://github.com/i3oris/reply.git
+    version: 0.3.1
+
