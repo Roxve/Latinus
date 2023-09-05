@@ -5,7 +5,7 @@ require "./interpeter/enviroments.cr";
 require "reply"
 require "colorize"
 
-puts "Welcome to The Crystalic*Interpeter\nType 'exit' to exit!, Start typing to see the colors!"
+puts "Welcome to The Latinus Programming lang!\nType 'exit' to exit!, Start typing to see the colors!"
 
 
 def isNum(str : String) 
