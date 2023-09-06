@@ -1,4 +1,7 @@
 enum Type
+  By_kw
+  Of_kw
+  Null_kw
   Operator
   Num
   Id
@@ -24,6 +27,17 @@ struct Tokenizer
     @@code = code.chars;
   end
 
+  @operators = [
+    "plus",
+    "minus",
+    "multiply",
+    "divide",
+    "power"
+  ]
+  @keywords = [
+    {name: "by", type: Type::By_kw},
+    {name: "of", type: Type::Of_kw}
+  ]
   def code
     @@code
   end
@@ -37,10 +51,39 @@ struct Tokenizer
     @current_token = token;
   end
 
-  def isAllowedId(x)
-    # anything can be an id except operators and all types of Open/Close Brackets!
+  def isOperator(x) 
+    return @operators.includes?(x);
+  end
 
-    return !isSkippableChar(x) && !("+*-/%√&|^<=>({[]})".includes? x);
+
+  def isKeyword(x)
+    results = false
+      @keywords.each do |keyword|
+        results = keyword.[:name] == x;
+        if results
+          break;
+        end
+      end
+    return results;
+  end
+
+  def getKeyword(x) 
+    results = Type::Null_kw
+
+    @keywords.each do |keyword|
+      if keyword[:name] == x
+        results = keyword[:type]
+        break;
+      end
+    end
+    return results;
+  end
+
+
+
+  def isAllowedId(x)
+    # latin only
+    return !isSkippableChar(x) && x.upcase != x.downcase;
   end
   def isNum(x) 
     return "01234.56789".includes? x;
@@ -77,9 +120,6 @@ struct Tokenizer
     end
 
     case @@code[0]
-    # operators!
-    when '+','-','*','/','^', '√'
-      add(Type::Operator, take)
     # numbers!
     when '0','1','2','3','4','5','6','7', '8', '9'
       res : String = "";
@@ -101,7 +141,14 @@ struct Tokenizer
         while @@code.size > 0 && isAllowedId(@@code[0]) 
           ress += take;
         end
-        add(Type::Id, ress)
+
+        if isKeyword(ress)
+          add(getKeyword(ress), ress)
+        elsif isOperator(ress)
+          add(Type::Operator, ress)
+        else 
+          add(Type::Id, ress)
+        end
       else 
         puts "unknown char '#{@@code[0]}' at line:#{@@line},colmun:#{@@colmun}";
         add(Type::Err, take)

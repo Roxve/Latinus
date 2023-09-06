@@ -75,7 +75,7 @@ struct Parser
   # handles add and minus exprs 1 + 1,1 - 1
   def parse_additive_expr() : Expr
     left : Expr = parse_multipicative_expr;
-    while at().value == '+' || at().value == '-'
+    while at().value == "plus" || at().value == "minus"
       operator = take().value;
       right = parse_multipicative_expr;
 
@@ -87,9 +87,9 @@ struct Parser
 
   def parse_multipicative_expr() : Expr
     left : Expr = parse_squared_expr;
-    while at().value == '*' || at().value == '/' || at().value == '%'
+    while at().value == "multiply" || at().value == "divide" || at().value == "modul"
       operator = take().value;
-      
+      except(Type::By_kw, "excepted 'multiply by' or 'divide by', etc")
       right = parse_squared_expr;
 
       left = BinaryExpr.new(left, right, operator, @@line, @@colmun);
@@ -99,11 +99,11 @@ struct Parser
 
   def parse_squared_expr() : Expr
     left : Expr = parse_primary_expr;
-    while at().value == '^'
+    while at().value == "power"
       take;
       right = parse_primary_expr;
 
-      left = BinaryExpr.new(left, right, '^', @@line, @@colmun);
+      left = BinaryExpr.new(left, right, "power", @@line, @@colmun);
     end
     return left;
   end
@@ -130,7 +130,7 @@ struct Parser
         # make it yourself!
         return Null.new(@@line, @@colmun)
       when Type::Operator
-        if at().value != '-' && at().value != '+' && at().value != '√'
+        if at().value != '-' && at().value != '+' && at().value != "root"
             puts "error cannot use operator '#{at().value}' without vaild left hand side\nat => line:#{@@line}, colmun:#{@@colmun}";
             take;
             return Null.new(@@line, @@colmun);

@@ -19,15 +19,15 @@ def eval_binary_expr(expr : Expr, env : Enviroment) : RuntimeVal
 
   lhs = lhs.as(NumVal); rhs = rhs.as(NumVal);
   case expr.operator 
-    when '+'
+    when "plus"
       results = mk_NUM(lhs.value + rhs.value);
-    when '-'
+    when "minus"
       results = mk_NUM(lhs.value - rhs.value);
-    when '*'
+    when "multiply"
       results = mk_NUM(lhs.value * rhs.value);
-    when '/'
+    when "divide"
       results = mk_NUM(lhs.value / rhs.value);
-    when '^'
+    when "power"
       results = mk_NUM(lhs.value ** rhs.value);
     else
       #.this shouldnt happen!
@@ -52,7 +52,7 @@ def eval_unary_expr(expr : UnaryExpr, env : Enviroment) : RuntimeVal
     results = mk_NUM(-rhs.value);
   when '+'
     return mk_NUM(+rhs.value);
-  when '√'
+  when "root"
     return mk_NUM(Math.sqrt(rhs.value));
   else
     puts "err";
