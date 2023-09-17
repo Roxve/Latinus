@@ -101,6 +101,7 @@ struct Parser
     left : Expr = parse_primary_expr;
     while at().value == "power"
       take;
+      except(Type::Of_kw, "excepted 'power of'");
       right = parse_primary_expr;
 
       left = BinaryExpr.new(left, right, "power", @@line, @@colmun);
