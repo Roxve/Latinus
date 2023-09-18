@@ -3,6 +3,7 @@ enum NodeType
   Program
   BinaryExpr
   UnaryExpr
+  VarCreation
   Num
   Null
   Id
@@ -18,9 +19,7 @@ abstract class Expr
   getter type;
 end
 
-# in this interpeter everything is an expr,
-# because we dont need stmt like var creation
-# we only need math!
+# in this interpeter everything is an expr
 
 
 class Program < Expr 
@@ -78,4 +77,12 @@ class IdExpr < Expr
   def initialize(@symbol : String | Char,@line, @colmun)
   end
   getter symbol;
+end
+
+class VarCreationExpr < Expr
+  @type = NodeType::VarCreation
+  def initialize(@name : String | Char,@value : Expr, @line, @colmun)
+  end
+  getter name;
+  getter value;
 end
