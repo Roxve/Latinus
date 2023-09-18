@@ -1,7 +1,8 @@
 require "../parser/AST.cr";
 require "./values.cr";
-require "./expr.cr"
+require "./expr.cr";
 require "./enviroments.cr";
+require "./stmt.cr";
 
 module Interpeter 
   @@line = 1;
@@ -26,6 +27,10 @@ module Interpeter
       last = eval_binary_expr(expr, env);
     when NodeType::UnaryExpr
       last = eval_unary_expr(expr.as(UnaryExpr), env);
+    when NodeType::VarCreation
+      last = eval_var_creation(expr.as(VarCreationExpr), env);
+    when NodeType::AssigmentExpr
+      last = eval_assigment(expr.as(AssigmentExpr), env);
     when NodeType::Num
       last = mk_NUM(expr.as(Num).value);
     when NodeType::Null
@@ -33,6 +38,8 @@ module Interpeter
     when NodeType::Id
       last = eval_id(expr.as(IdExpr), env);
     else
+      puts "please report this!\n"
+      puts expr.inspect;
       last = mk_NULL();
     end
     return last;

@@ -4,6 +4,7 @@ enum NodeType
   BinaryExpr
   UnaryExpr
   VarCreation
+  AssigmentExpr
   Num
   Null
   Id
@@ -81,6 +82,14 @@ end
 
 class VarCreationExpr < Expr
   @type = NodeType::VarCreation
+  def initialize(@name : String | Char,@value : Expr, @line, @colmun)
+  end
+  getter name;
+  getter value;
+end
+
+class AssigmentExpr < Expr
+  @type = NodeType::AssigmentExpr
   def initialize(@name : String | Char,@value : Expr, @line, @colmun)
   end
   getter name;

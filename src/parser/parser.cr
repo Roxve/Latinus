@@ -1,6 +1,6 @@
 require "./AST.cr";
 require "./tokenizer.cr";
-
+require "colorize"
 
 # this is a Partt parser!
 struct Parser
@@ -8,7 +8,7 @@ struct Parser
 
   # same as Tokenizer.current_token but its more fancy!
   @Token : Token;
-
+  
   def initialize(code : String)
     @Tokenizer = Tokenizer.new code;
     # gets the first token
@@ -18,6 +18,9 @@ struct Parser
   @@line = 1;
   @@colmun = 0;
 
+  def error(msg : String)
+    puts (msg + "\nat => line:#{@@line}, colmun:#{@@colmun}").colorize(:red)
+  end
   def update() 
     @@line = @Token.line
     @@colmun = @Token.colmun
@@ -43,7 +46,7 @@ struct Parser
 
   def except(correct_type : Type, msg : String)
     if at().type != correct_type
-      puts msg + "\nat => line:#{at().line}, colmun:#{at().colmun}";
+      error(msg);
     end
     return take();
   end
@@ -60,18 +63,35 @@ struct Parser
 
   # acts as a return to the first expr to parse
   def parse_expr() : Expr
-    return parse_var_creation;
+    return parse_assigment_expr;
   end
   
 
   # order is below:
   # expr
+  # assigment expr
+  # var creation
   # additive binary expr => +,-
   # multipactive binary expr => *,/,%
   # squared binary expr (idk what is it in english) => ^
   # unary expr =>, -1,+1, √1 (redirects to expr not to primary)
   # primary expr => finds nums ids & more;
+  def parse_assigment_expr : Expr
+    left = parse_var_creation;
+    if at().type == Type::To_kw
+      take;
+      if left.type != NodeType::Id
+        error("excepted an id in assigment expr");
+        return Null.new @@line, @@colmun;
+      end
+      name = (left.as IdExpr).symbol
+      value = parse_var_creation;
 
+      return AssigmentExpr.new name, value, @@line, @@colmun;
+    else
+      return left;
+    end
+  end
   def parse_var_creation : Expr
     if at().type == Type::Set_kw
       take;

@@ -8,7 +8,7 @@ def createEnv() : Enviroment
   return env;
 end
 
-class Enviroment 
+struct Enviroment 
   @Vars : Hash(String | Char, RuntimeVal);
   def initialize()
     @Vars = Hash(String | Char, RuntimeVal).new;
@@ -23,6 +23,18 @@ class Enviroment
     @Vars[name] = value;
     return value;
   end
+
+  def set_var(name : String | Char, value : RuntimeVal) : RuntimeVal
+    if !@Vars.has_key?(name)
+      puts "error #{name} doesnt exit";
+      return mk_NULL;
+    end
+    
+    @Vars[name] = value;
+    return value;
+  end
+
+
   def find_var(name : String | Char) : RuntimeVal
     if !@Vars.has_key?(name)
       puts "error #{name} doesnt exit!"

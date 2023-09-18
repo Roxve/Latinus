@@ -20,18 +20,7 @@ def isNum(str : String)
 
   return results;
 end
-def isBlue(str : String) 
-  results : Bool = false;
-  str.chars.each do |char|
-    if "+-*/^√% ".includes?(char) || char == "\t"
-      results = true;
-    else
-      false
-    end
-  end
 
-  return results
-end
 # my own custom reader!
 class AtonReader < Reply::Reader
   def prompt(io : IO, line_number : Int32, color? : Bool) : Nil
@@ -44,8 +33,10 @@ class AtonReader < Reply::Reader
       return expression.colorize(:red).to_s
     elsif isNum(expression)
       return expression.colorize(:yellow).to_s;
-    elsif isBlue(expression);
+    elsif expression.size > 0 && " \t".includes? expression[expression.size - 1];
       return expression.colorize(:blue).to_s;
+    elsif expression.upcase != expression.downcase
+      return expression.colorize(:green).to_s
     else 
       return expression.colorize(:green).to_s;
     end
@@ -53,13 +44,13 @@ class AtonReader < Reply::Reader
 end
 
 reader = AtonReader.new
+env = createEnv;
 
 reader.read_loop do |code| 
   STDOUT.flush
   if code.upcase.includes? "EXIT"
     exit
   end
-  env = createEnv();
   
   parser = Parser.new(code);
   ast = parser.productAST;
