@@ -72,7 +72,7 @@ struct Tokenizer
   end
 
   def getKeyword(x) 
-    results = Type::Null_kw
+    results = Type:: Unknown_kw
 
     @keywords.each do |keyword|
       if keyword[:name] == x
