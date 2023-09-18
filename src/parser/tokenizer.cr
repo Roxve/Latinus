@@ -1,7 +1,9 @@
 enum Type
   By_kw
   Of_kw
-  Null_kw
+  Unknown_kw
+  Set_kw
+  To_kw
   Operator
   Num
   Id
@@ -36,7 +38,9 @@ struct Tokenizer
   ]
   @keywords = [
     {name: "by", type: Type::By_kw},
-    {name: "of", type: Type::Of_kw}
+    {name: "of", type: Type::Of_kw},
+    {name: "set", type: Type::Set_kw},
+    {name: "to", type: Type::To_kw}
   ]
   def code
     @@code
