@@ -60,7 +60,7 @@ struct Parser
 
   # acts as a return to the first expr to parse
   def parse_expr() : Expr
-    return parse_additive_expr;
+    return parse_var_creation;
   end
   
 
@@ -71,6 +71,20 @@ struct Parser
   # squared binary expr (idk what is it in english) => ^
   # unary expr =>, -1,+1, √1 (redirects to expr not to primary)
   # primary expr => finds nums ids & more;
+
+  def parse_var_creation : Expr
+    if at().type == Type::Set_kw
+      take;
+      name = except(Type::Id,"excepted an id with var name").value
+      except(Type::To_kw, "excepted 'to' keyword")
+
+      value = parse_expr;
+
+      return VarCreationExpr.new name,value,@@line,@@colmun;
+    else
+      return parse_additive_expr
+    end
+  end
 
   # handles add and minus exprs 1 + 1,1 - 1
   def parse_additive_expr() : Expr
