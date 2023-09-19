@@ -4,6 +4,7 @@ require "./parser/AST.cr";
 require "./interpeter/enviroments.cr";
 require "reply"
 require "colorize"
+require "option_parser"
 
 puts "Welcome to The Latinus Repl!\nType 'exit' to exit!, Start typing to see the colors!"
 
@@ -43,18 +44,34 @@ class AtonReader < Reply::Reader
   end
 end
 
-reader = AtonReader.new
-env = createEnv;
 
-reader.read_loop do |code| 
-  STDOUT.flush
-  if code.upcase.includes? "EXIT"
-    exit
+OptionParser.parse do |opt|
+  opt.banner = "The latinus programming language"
+  opt.on "-r FILE", "run=FILE" do |path|
+    run(File.read(path))
   end
-  
-  parser = Parser.new(code);
-  ast = parser.productAST;
+end
 
-  ran = Interpeter.eval_program(ast.as(Program), env);
-  puts ran.value;
+repl
+
+def repl
+  env = createEnv
+  reader = AtonReader.new
+  reader.read_loop do |code| 
+    STDOUT.flush
+    if code.upcase.includes? "EXIT"
+      exit
+    end
+  
+    parser = Parser.new(code);
+    ast = parser.productAST;
+
+    ran = Interpeter.eval_program(ast.as(Program), env);
+    puts ran.value;
+  end
+end
+
+def run(code)
+  puts code
+  exit
 end
