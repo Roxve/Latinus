@@ -63,7 +63,9 @@ struct Tokenizer
     return @operators.includes?(x);
   end
 
-
+  def isSkippableChar(x)
+    return x == ' ' || x == '\t'
+  end
   def isKeyword(x)
     results = false
       @keywords.each do |keyword|
@@ -91,14 +93,10 @@ struct Tokenizer
 
   def isAllowedId(x)
     # latin only
-    return !isSkippableChar(x) && x.upcase != x.downcase;
+    return (!isSkippableChar(x) && x.upcase != x.downcase) || isNum(x);
   end
   def isNum(x) 
     return "01234.56789".includes? x;
-  end
-
-  def isSkippableChar(x)
-    return " ;".includes?(x) || x == "\t";
   end
   
   def take()
@@ -115,7 +113,7 @@ struct Tokenizer
   end
   
   def getLine() 
-    if @@code[0] == "\n" 
+    if @@code[0] == '\n'
       @@line += 1;
       @@colmun = 0;
       take
@@ -136,7 +134,10 @@ struct Tokenizer
     end
 
     case @@code[0]
-    # numbers!
+    # skippable chars
+    when '\t', ' '
+      take
+    # numbers
     when '0','1','2','3','4','5','6','7', '8', '9'
       res : String = "";
       # to make a number of multipli chars ex. instead of '1' we make '668,77' as a single number

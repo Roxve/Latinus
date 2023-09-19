@@ -6,7 +6,8 @@ enum NodeType
   VarCreation
   AssigmentExpr
   Num
-  Null
+  Str
+  Unknown
   Id
 end
 
@@ -64,9 +65,17 @@ class Num < Expr
   getter value;
 end
 
+class Str < Expr
+  @type = NodeType::Str;
+  def initialize(@value : String | Char, line, colmun) 
+    @line = line;
+    @colmun = colmun;
+  end
+  getter value;
+end
 
-class Null < Expr
-  @type = NodeType::Null;
+class Unknown < Expr
+  @type = NodeType::Unknown;
   def initialize(line, colmun) 
     @line = line;
     @colmun = colmun

@@ -35,7 +35,9 @@ module Interpeter
       last = eval_assigment(expr.as(AssigmentExpr), env);
     when NodeType::Num
       last = mk_NUM(expr.as(Num).value);
-    when NodeType::Null
+    when NodeType::Str
+      last = mk_STR(expr.as(Str).value);
+    when NodeType::Unknown
       last = mk_NULL();
     when NodeType::Id
       last = eval_id(expr.as(IdExpr), env);

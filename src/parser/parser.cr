@@ -79,7 +79,7 @@ struct Parser
       take;
       if left.type != NodeType::Id
         error("excepted an id in assigment expr");
-        return Null.new @@line, @@colmun;
+        return Unknown.new @@line, @@colmun;
       end
       name = (left.as IdExpr).symbol
       value = parse_var_creation;
@@ -147,6 +147,9 @@ struct Parser
       when Type::Num
         num = Num.new(take().value.to_f,@@line,@@colmun);
         return num;
+      when Type::Str
+        str = Str.new(take().value,@@line,@@colmun);
+        return str;
       when Type::Id
         id = IdExpr.new(take().value, @@line, @@colmun);
         return id;
@@ -160,12 +163,12 @@ struct Parser
 
         # i dont think of making an error system for this!
         # make it yourself!
-        return Null.new(@@line, @@colmun)
+        return Unknown.new(@@line, @@colmun)
       when Type::Operator
         if at().value != '-' && at().value != '+' && at().value != "root"
             error "error cannot use operator '#{at().value}' without vaild left hand side";
             take;
-            return Null.new(@@line, @@colmun);
+            return Unknown.new(@@line, @@colmun);
         end
         operator = take.value;
         num = parse_expr;
@@ -173,7 +176,7 @@ struct Parser
       else
         error "error unexcepted token found while parsing\ngot => type:#{at().type},value:#{at().value}"
         take;
-        return Null.new(@@line, @@colmun);
+        return Unknown.new(@@line, @@colmun);
     end
 end
 end

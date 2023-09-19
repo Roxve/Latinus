@@ -6,7 +6,6 @@ require "reply"
 require "colorize"
 require "option_parser"
 
-puts "Welcome to The Latinus Repl!\nType 'exit' to exit!, Start typing to see the colors!"
 
 
 def isNum(str : String) 
@@ -47,14 +46,40 @@ end
 
 OptionParser.parse do |opt|
   opt.banner = "The latinus programming language"
-  opt.on "-r FILE", "run=FILE" do |path|
-    run(File.read(path))
+  opt.on "run", "Runs a file" do
+    opt.on "-f PATH", "--file=PATH", "File to run" do |path|
+      run(File.read(path));
+    end
+    opt.on "-h", "--help", "Displays help" { puts opt; exit 0; }
+    opt.invalid_option do |flag|
+      puts "unknown option '#{flag}'"
+      puts opt
+      exit 1
+    end
+    opt.on " ", "no option(Err)" do
+      puts "no file given! use -f File or --file File to pass file path"
+      puts opt
+      exit 1
+    end
+  end
+  opt.on "-h", "--help","Displays help" { puts opt; exit 0;}
+  opt.invalid_option do |flag|
+    puts "unknown option '#{flag}'"
+    puts opt
+    exit 1
+  end
+  opt.missing_option do |option_flag|
+    STDERR.puts "ERROR: #{option_flag} is missing something."
+    STDERR.puts ""
+    STDERR.puts opt
+    exit(1)
   end
 end
 
 repl
 
 def repl
+  puts "Welcome to The Latinus Repl!\nType 'exit' to exit!, Start typing to see the colors!"
   env = createEnv
   reader = AtonReader.new
   reader.read_loop do |code| 
@@ -72,6 +97,10 @@ def repl
 end
 
 def run(code)
-  puts code
+  env = createEnv
+  parser = Parser.new code;
+  ast = parser.productAST
+  ran = Interpeter.eval_program ast.as(Program), env
+  puts ran.value
   exit
 end

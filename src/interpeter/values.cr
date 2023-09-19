@@ -13,6 +13,13 @@ class NumVal < RuntimeVal
   getter value;
 end
 
+class StrVal < RuntimeVal
+  @type = "str";
+  def initialize(@value : String | Char) 
+  end
+  getter value;
+end
+
 class NullVal < RuntimeVal
   @type = "null"
   @value : Nil;
@@ -28,5 +35,9 @@ end
 
 def mk_NUM(val : Int | Float64 | Float32) 
   return NumVal.new(val)
+end
+
+def mk_STR(val : String | Char) 
+  return StrVal.new(val)
 end
 
