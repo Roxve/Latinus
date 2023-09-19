@@ -1,6 +1,6 @@
-require "./AST.cr";
-require "./tokenizer.cr";
-require "colorize"
+require "./AST.cr"
+require "./tokenizer.cr"
+require "../etc.cr" # error macro
 
 # this is a Partt parser!
 struct Parser
@@ -18,9 +18,6 @@ struct Parser
   @@line = 1;
   @@colmun = 0;
 
-  def error(msg : String)
-    puts (msg + "\nat => line:#{@@line}, colmun:#{@@colmun}").colorize(:red)
-  end
   def update() 
     @@line = @Token.line
     @@colmun = @Token.colmun
@@ -166,7 +163,7 @@ struct Parser
         return Null.new(@@line, @@colmun)
       when Type::Operator
         if at().value != '-' && at().value != '+' && at().value != "root"
-            puts "error cannot use operator '#{at().value}' without vaild left hand side\nat => line:#{@@line}, colmun:#{@@colmun}";
+            error "error cannot use operator '#{at().value}' without vaild left hand side";
             take;
             return Null.new(@@line, @@colmun);
         end
@@ -174,7 +171,7 @@ struct Parser
         num = parse_expr;
         return UnaryExpr.new(num, operator, @@line, @@colmun);
       else
-        puts "error unexcepted token found while parsing\ngot => type:#{at().type},value:#{at().value}"
+        error "error unexcepted token found while parsing\ngot => type:#{at().type},value:#{at().value}"
         take;
         return Null.new(@@line, @@colmun);
     end

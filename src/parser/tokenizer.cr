@@ -1,3 +1,6 @@
+require "../etc.cr" # error macro
+
+
 enum Type
   By_kw
   Of_kw
@@ -159,7 +162,7 @@ struct Tokenizer
       end
 
       if at != '<'
-        puts "unfinished string\nat => line:#{@@line}, colmun:#{@@colmun}"
+        error "unfinished string"
         add(Type::Err, "unfinished_string");
       else
         take;
@@ -167,7 +170,7 @@ struct Tokenizer
           if @@code.size > 0 && @@code[0] == '<'
             take
           else
-            puts "unfinished string dobule string has to end with dobule '<' '<<'\nat => line:#{@@line}, colmun:#{@@colmun}"
+            error "unfinished string dobule string has to end with dobule '<' '<<'"
             add(Type::Err, "unfinished_string")
           end
         end
@@ -191,7 +194,7 @@ struct Tokenizer
           add(Type::Id, ress)
         end
       else 
-        puts "unknown char '#{@@code[0]}' at line:#{@@line},colmun:#{@@colmun}";
+        error "unknown char '#{@@code[0]}'";
         add(Type::Err, take)
       end
     end
