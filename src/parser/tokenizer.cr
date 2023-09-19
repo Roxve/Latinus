@@ -1,11 +1,12 @@
 enum Type
   By_kw
   Of_kw
-  Unknown_kw
+  Unknown
   Set_kw
   To_kw
   Operator
   Num
+  Str
   Id
   OpenParen
   CloseParen
@@ -72,7 +73,7 @@ struct Tokenizer
   end
 
   def getKeyword(x) 
-    results = Type:: Unknown_kw
+    results = Type::Unknown
 
     @keywords.each do |keyword|
       if keyword[:name] == x
@@ -100,6 +101,14 @@ struct Tokenizer
   def take()
     @@colmun += 1;
     return @@code.shift();
+  end
+  def at()
+    # to avoid index out of range;
+    if @@code.size <= 0
+      return ' ';
+    else
+      return @@code[0];
+    end
   end
   
   def getLine() 
@@ -136,6 +145,34 @@ struct Tokenizer
       add(Type::OpenParen, take)
     when ')'
       add(Type::CloseParen, take)
+    when '>'
+      take;
+      dobule : Bool = false
+      if @@code[0] == '>'
+        take
+        dobule = true
+      end
+      str_res : String = "";
+      while @@code.size > 0 && @@code[0] != '<'
+        getLine;
+        str_res += take
+      end
+
+      if at != '<'
+        puts "unfinished string\nat => line:#{@@line}, colmun:#{@@colmun}"
+        add(Type::Err, "unfinished_string");
+      else
+        take;
+        if dobule
+          if @@code.size > 0 && @@code[0] == '<'
+            take
+          else
+            puts "unfinished string dobule string has to end with dobule '<' '<<'\nat => line:#{@@line}, colmun:#{@@colmun}"
+            add(Type::Err, "unfinished_string")
+          end
+        end
+        add(Type::Str, str_res)
+      end
     else
       if getLine() 
       # what it does is definded in the getline func i did this to detecte lines in strings
