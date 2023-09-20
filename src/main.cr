@@ -43,23 +43,28 @@ class AtonReader < Reply::Reader
   end
 end
 
+opts : String | OptionParser= "unknown"
 
 OptionParser.parse do |opt|
+  opts = opt
+
   opt.banner = "The latinus programming language"
   opt.on "run", "Runs a file" do
+    gave_file = false;
     opt.on "-f PATH", "--file=PATH", "File to run" do |path|
+      gave_file = true;
       run(File.read(path));
     end
+
     opt.on "-h", "--help", "Displays help" { puts opt; exit 0; }
+    
     opt.invalid_option do |flag|
       puts "unknown option '#{flag}'"
       puts opt
       exit 1
     end
-    opt.on " ", "no option(Err)" do
-      puts "no file given! use -f File or --file File to pass file path"
-      puts opt
-      exit 1
+    if ARGV.size < 2
+      repl
     end
   end
   opt.on "-h", "--help","Displays help" { puts opt; exit 0;}
@@ -76,7 +81,7 @@ OptionParser.parse do |opt|
   end
 end
 
-repl
+puts "error no args given!\nuse '{path/to/latinus} run' to enter repl, '{path/to/latinus} run -f {path/to/file}' to run from file\n#{opts}"
 
 def repl
   puts "Welcome to The Latinus Repl!\nType 'exit' to exit!, Start typing to see the colors!"

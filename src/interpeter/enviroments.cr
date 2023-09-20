@@ -24,7 +24,7 @@ class Enviroment
   def declare_var(name : String | Char, value : RuntimeVal) : RuntimeVal
     update
     if @Vars.has_key?(name)
-      error "error #{name} already exit";
+      error "check your grammar! #{name} already exit";
       return mk_NULL;
     end
     
@@ -35,7 +35,7 @@ class Enviroment
   def set_var(name : String | Char, value : RuntimeVal) : RuntimeVal
     update
     if !@Vars.has_key?(name)
-      error "error #{name} doesnt exit";
+      error "check your grammar! #{name} doesnt exit";
       return mk_NULL;
     end
     
@@ -47,7 +47,7 @@ class Enviroment
   def find_var(name : String | Char) : RuntimeVal
     update
     if !@Vars.has_key?(name)
-      error "error #{name} doesnt exit!"
+      error "check your grammar! #{name} doesnt exit!"
       return mk_NULL;
     end
     return @Vars[name];

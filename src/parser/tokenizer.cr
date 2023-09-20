@@ -29,8 +29,12 @@ end
 
 struct Tokenizer
   @@code = [] of String
+  @@line = 1
+  @@colmun = 0
   def initialize(code : String) 
     @@code = code.chars;
+    @@line = 1;
+    @@colmun =0;
   end
 
   @operators = [
@@ -49,8 +53,7 @@ struct Tokenizer
   def code
     @@code
   end
-  @@line = 1;
-  @@colmun = 0;
+
   @current_token : Token = Token.new(Type::Err, "unknown", @@line, @@colmun);
   getter current_token
 
