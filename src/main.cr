@@ -63,7 +63,7 @@ OptionParser.parse do |opt|
       puts opt
       exit 1
     end
-    if ARGV.size < 2
+    if ARGV.size < 3 && !gave_file
       repl
     end
   end
