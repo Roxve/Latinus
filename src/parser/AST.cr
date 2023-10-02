@@ -5,6 +5,8 @@ enum NodeType
   UnaryExpr
   VarCreation
   AssigmentExpr
+  CallExpr
+  MemberExpr
   Num
   Str
   Unknown
@@ -103,4 +105,19 @@ class AssigmentExpr < Expr
   end
   getter name;
   getter value;
+end
+
+class CallExpr < Expr
+  @type = NodeType::CallExpr
+  def initialize(@call : Expr,@args : Array(Expr), @line, @colmun)
+  end
+  getter args;
+  # call is caller
+  getter call;
+end
+
+class MemberExpr < Expr
+  @type = NodeType::MemberExpr
+  def initialize(@obj : Expr, @property : Expr, @isIndexed : Bool, @line, @colmun)
+  end
 end

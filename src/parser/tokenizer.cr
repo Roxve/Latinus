@@ -13,6 +13,12 @@ enum Type
   Id
   OpenParen
   CloseParen
+  OpenBracket
+  CloseBracket
+  Start
+  Dot
+  Comma
+  Point
   Err
   EOF
 end
@@ -152,6 +158,28 @@ struct Tokenizer
       add(Type::OpenParen, take)
     when ')'
       add(Type::CloseParen, take)
+    when '.'
+      add(Type::Dot, take)
+    when '-'
+      take
+      # -> for point - for start ->> is a start && begining of a string ->>> is for pointing into string
+      if at == '>'
+        if @@code.size > 1 && @@code[1] == '>'
+          if @@code.size > 2 && @@code [2] == '>'
+            take
+            add(Type::Point, "->")
+          else
+            add(Type::Start, "-")
+          end
+        else
+          take
+          add(Type::Point, "->")
+        end
+      else
+        add(Type::Start, "-")
+      end
+    when ','
+      add(Type::Comma, take)
     when '>'
       take;
       dobule : Bool = false

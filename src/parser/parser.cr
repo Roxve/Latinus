@@ -71,6 +71,8 @@ struct Parser
   # additive binary expr => +,-
   # multipactive binary expr => *,/,%
   # squared binary expr (idk what is it in english) => ^
+  # call
+  # member
   # unary expr =>, -1,+1, √1 (redirects to expr not to primary)
   # primary expr => finds nums ids & more;
   def parse_assigment_expr : Expr
@@ -129,18 +131,95 @@ struct Parser
   end
 
   def parse_squared_expr() : Expr
-    left : Expr = parse_primary_expr;
+    left : Expr = parse_call_member_expr;
     while at().value == "power"
       take;
       except(Type::Of_kw, "excepted 'power of'");
-      right = parse_primary_expr;
+      right = parse_call_member_expr;
 
       left = BinaryExpr.new(left, right, "power", @@line, @@colmun);
     end
     return left;
   end
+  
+
+  def parse_call_member_expr : Expr
+    member = parse_member_expr
+    if at().type == Type::Start
+      return parse_call_expr(member);
+    end
+
+    return member;
+  end
+
+  def parse_call_expr(call : Expr?) 
+    if call
+      expr = CallExpr.new call, parse_args, @@line, @@colmun;
+
+      if at().type == Type::Start
+        expr = parse_call_expr(expr);
+      end
+      return expr;
+    else
+      left = parse_primary_expr;
+      if at().type == Type::Start
+        return parse_call_expr(left);
+      end
+      return left;
+    end
+  end
+
+  def parse_member_expr : Expr
+    left = parse_call_expr nil;
 
 
+    while notEOF && (at().type == Type::Point || at().type == Type::OpenBracket)
+      op = take;
+      pproperty : Expr;
+      isIndexed : Bool = false; # => obj[index_property] || obj->property
+
+      if op.type == Type::Point
+        isIndexed = false;
+        pproperty = parse_expr;
+        if pproperty.type != NodeType::Id
+          error "excepted property of id obj->property"
+        end
+      else
+        isIndexed = true;
+        pproperty = parse_expr;
+
+        except(Type::CloseBracket, "excepted ']'")
+      end
+
+      left = MemberExpr.new left, pproperty, isIndexed, @@line, @@colmun
+    end
+
+    return left;
+  end
+  
+  def parse_args : Array(Expr)
+    except(Type::Start, "excepted start of args '-'");
+
+    args = [] of Expr
+
+    if at().type != Type::Dot
+      args = parse_items
+    end
+
+    except(Type::Dot, "excepted '.' to end args");
+    return args;
+  end
+  
+  def parse_items : Array(Expr)
+    items = [] of Expr
+    items.push parse_assigment_expr
+
+    while at().type == Type::Comma
+      take;
+      items.push parse_assigment_expr
+    end
+    return items;
+  end
 
   def parse_primary_expr() : Expr 
     case at().type 
