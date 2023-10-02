@@ -1,0 +1,2 @@
+set num0 to 7
+set num to num0
